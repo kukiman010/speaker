@@ -1,0 +1,11 @@
+.qmake.stash
+.qtc_clangd
+build
+release
+Makefile*
+moc_*
+*.moc
+*.o
+*.a
+ui_*.h
+*.pro.*
