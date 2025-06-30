@@ -2,6 +2,7 @@
 .qtc_clangd
 build
 release
+debug
 Makefile*
 moc_*
 *.moc
