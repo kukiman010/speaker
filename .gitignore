@@ -10,3 +10,4 @@ moc_*
 *.a
 ui_*.h
 *.pro.*
+*.exe

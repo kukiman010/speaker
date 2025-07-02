@@ -24,10 +24,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
+        bookconvector.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
+        bookconvector.h \
         mainwindow.h
 
 FORMS += \
