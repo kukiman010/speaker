@@ -8,8 +8,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Поиск пакетов Qt
-find_package(Qt5 COMPONENTS Core Gui Network Widgets REQUIRED)
-#find_package(Qt6 COMPONENTS Core Gui Network Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Core Network QUIET)
+if (Qt5_FOUND)
+    set(QT_PACKAGE Qt5)
+else()
+    find_package(Qt6 COMPONENTS Core Network REQUIRED)
+    set(QT_PACKAGE Qt6)
+endif()
 
 # Список исходных и заголовочных файлов проекта
 set(SOURCES

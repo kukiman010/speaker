@@ -34,3 +34,48 @@ HEADERS += \
 
 FORMS += \
         mainwindow.ui
+
+
+
+
+
+win32 {
+        # message($$PWD/../libs/mupdf/include)
+        # message(L$$PWD/../libs/mupdf/win_x64/Release)
+        INCLUDEPATH += D:\programms\vcpkg\installed\x64-windows\include
+        # LIBS += -LD:/programms/vcpkg/installed/x64-windows/lib tesseract55.lib
+        LIBS += -LD:/programms/vcpkg/installed/x64-windows/lib libmupdf.lib jpeg.lib openjp2.lib tesseract55.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib
+        # LIBS += -LD:/programms/vcpkg/installed/x64-windows/lib jpeg.lib openjp2.lib tesseract55.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib
+
+        # INCLUDEPATH += $$PWD/../../../../cpp/mupdf/include
+        # LIBS += -L$$PWD/../../../../cpp/mupdf\platform\win32\x64\Debug libmupdf.lib jpeg.lib openjp2.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib gumbo.lib
+
+        # OBJECTS += D:/users/qt_projects/mupdf/platform/win32/x64/Release/libresources/CharisSIL_cff.obj
+
+        # Автоматически получаем список всех obj-файлов из папки libresources:
+        OBJECTS += $$files(D:/users/qt_projects/mupdf/platform/win32/x64/Release/libresources/*.obj)
+        # OBJECTS += $$files(D:/users/qt_projects/temp/*.obj)
+}
+
+unix:!macx {
+        # message("$$PWD/../libs/tesseract/include")
+        # message("-L$$PWD/../libs/tesseract/linux/release ")
+
+        # mupdf
+        INCLUDEPATH += $$PWD/../libs/mupdf/include
+        LIBS += -L$$PWD/../libs/mupdf/linux/release -lmupdf -lmupdf-third -lz -ljpeg -lopenjp2
+
+        # tesseract
+        INCLUDEPATH += $$PWD/../libs/tesseract/include
+        LIBS += -L$$PWD/../libs/tesseract/linux/release -ltesseract -llept
+}
+
+macx {
+        # INCLUDEPATH += $$PWD/../mupdf/include
+        # LIBS += -L$$PWD/../mupdf/build-dir/Release -lmupdf
+}
+
+
+
+
+

@@ -13,18 +13,22 @@ CONFIG += c++17 cmdline
 SOURCES += \
     # abstractcommand.cpp \
     # abstractobject.cpp \
+    book.cpp \
     command.cpp \
     socket.cpp \
-    sslworker.cpp
+    sslworker.cpp \
+    book.cpp
 
 
 HEADERS += \
     # abstractcommand.h \
     # abstractobject.h \
+    book.h \
     command.h \
     saved_container.h \
     socket.h \
-    sslworker.h
+    sslworker.h \
+    book.h
 
 
 

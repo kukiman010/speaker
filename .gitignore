@@ -11,3 +11,4 @@ moc_*
 ui_*.h
 *.pro.*
 *.exe
+libs/*

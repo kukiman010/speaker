@@ -1,0 +1,55 @@
+cmake_minimum_required(VERSION 3.16)
+project(creator_ebook LANGUAGES CXX)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
+
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+
+add_executable(creator_ebook
+    bookconvector.cpp
+    main.cpp
+    mainwindow.cpp
+    bookconvector.h
+    mainwindow.h
+    mainwindow.ui
+)
+
+target_link_libraries(creator_ebook PRIVATE Qt6::Core Qt6::Gui Qt6::Widgets)
+
+# Включить предупреждения по устаревшему API
+target_compile_definitions(creator_ebook PRIVATE QT_DEPRECATED_WARNINGS)
+
+# Если требуется полностью отключить deprecated API в Qt6:
+# target_compile_definitions(creator_ebook PRIVATE QT_DISABLE_DEPRECATED_BEFORE=0x060000)
+
+# ------- Платформенно-специфические библиотеки --------
+
+if(WIN32)
+    # Для win32 не подключаем mupdf по умолчанию (пример, раскомментировать если понадобится)
+    # target_include_directories(creator_ebook PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../libs/mupdf/include)
+    # target_link_directories(creator_ebook PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../libs/mupdf/win_x64/Release)
+    # target_link_libraries(creator_ebook PRIVATE mupdf mupdf-third z jpeg)
+    # target_link_directories(creator_ebook PRIVATE D:/programms/vcpkg/installed/x64-mingw-static/lib)
+    # target_link_libraries(creator_ebook PRIVATE libmupdf)
+endif()
+
+if(UNIX AND NOT APPLE)
+    # mupdf
+    target_include_directories(creator_ebook PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/mupdf/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/tesseract/include
+    )
+    target_link_directories(creator_ebook PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/mupdf/linux/release
+        ${CMAKE_CURRENT_SOURCE_DIR}/../libs/tesseract/linux/release
+    )
+    target_link_libraries(creator_ebook PRIVATE mupdf mupdf-third z jpeg openjp2 tesseract lept)
+endif()
+
+if(APPLE)
+    # target_include_directories(creator_ebook PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../mupdf/include)
+    # target_link_directories(creator_ebook PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../mupdf/build-dir/Release)
+    # target_link_libraries(creator_ebook PRIVATE mupdf)
+endif()

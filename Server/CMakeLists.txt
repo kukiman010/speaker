@@ -8,7 +8,13 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Настройка Qt
-find_package(Qt5 COMPONENTS Core Network REQUIRED)
+find_package(Qt5 COMPONENTS Core Network QUIET)
+if (Qt5_FOUND)
+    set(QT_PACKAGE Qt5)
+else()
+    find_package(Qt6 COMPONENTS Core Network REQUIRED)
+    set(QT_PACKAGE Qt6)
+endif()
 
 # Включаем автоматическую обработку moc-uic-rcc файлов
 set(CMAKE_AUTOMOC ON)
@@ -30,7 +36,11 @@ set(HEADERS
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 # Линковка с Qt5
-target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network)
+if (Qt5_FOUND)
+    target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Network)
+else()
+    target_link_libraries(${PROJECT_NAME} Qt6::Core Qt6::Network)
+endif()
 
 # Пути к дополнительным библиотекам и заголовочным файлам
 if(WIN32)

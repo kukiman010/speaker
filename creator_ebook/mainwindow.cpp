@@ -23,7 +23,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_action_ebook_triggered()
 {
-    QFileDialog dialog(this,"", QDir::homePath(),"*.pdf *.epub");
+    QFileDialog dialog(this,"", QDir::homePath(),"*.pdf *.epub (*.pdf *.epub)");
     dialog.setFileMode(QFileDialog::ExistingFile);
 
     // dialog.show();

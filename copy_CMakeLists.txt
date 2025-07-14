@@ -1,0 +1,13 @@
+cmake_minimum_required(VERSION 3.16)
+project(speaker)
+
+# Добавляем подпроекты в порядке их зависимостей
+add_subdirectory(Interface)
+add_subdirectory(Control)
+
+# Server и Client зависят от Interface и Control
+add_subdirectory(Server)
+add_subdirectory(Client)
+
+# creator_ebook тоже зависит от Interface и Control
+add_subdirectory(creator_ebook)
