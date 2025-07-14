@@ -26,11 +26,15 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         bookconvector.cpp \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        ocrreader.cpp \
+        pdfreader.cpp
 
 HEADERS += \
         bookconvector.h \
-        mainwindow.h
+        mainwindow.h \
+        ocrreader.h \
+        pdfreader.h
 
 FORMS += \
         mainwindow.ui
@@ -43,18 +47,16 @@ win32 {
         # message($$PWD/../libs/mupdf/include)
         # message(L$$PWD/../libs/mupdf/win_x64/Release)
         INCLUDEPATH += D:\programms\vcpkg\installed\x64-windows\include
-        # LIBS += -LD:/programms/vcpkg/installed/x64-windows/lib tesseract55.lib
-        LIBS += -LD:/programms/vcpkg/installed/x64-windows/lib libmupdf.lib jpeg.lib openjp2.lib tesseract55.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib
+        LIBS += -LD:/programms/vcpkg/installed/x64-windows/lib tesseract55.lib leptonica-1.85.0.lib
+        # LIBS += -LD:/programms/vcpkg/installed/x64-windows/lib libmupdf.lib jpeg.lib openjp2.lib tesseract55.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib
         # LIBS += -LD:/programms/vcpkg/installed/x64-windows/lib jpeg.lib openjp2.lib tesseract55.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib
 
-        # INCLUDEPATH += $$PWD/../../../../cpp/mupdf/include
-        # LIBS += -L$$PWD/../../../../cpp/mupdf\platform\win32\x64\Debug libmupdf.lib jpeg.lib openjp2.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib gumbo.lib
-
-        # OBJECTS += D:/users/qt_projects/mupdf/platform/win32/x64/Release/libresources/CharisSIL_cff.obj
+        INCLUDEPATH += $$PWD/../../../../cpp/mupdf/include
+        LIBS += -L$$PWD/../../../../cpp/mupdf\platform\win32\x64\Debug libmupdf.lib jpeg.lib openjp2.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib gumbo.lib
 
         # Автоматически получаем список всех obj-файлов из папки libresources:
-        OBJECTS += $$files(D:/users/qt_projects/mupdf/platform/win32/x64/Release/libresources/*.obj)
-        # OBJECTS += $$files(D:/users/qt_projects/temp/*.obj)
+        OBJECTS += $$files($$PWD/../libs/mupdf/win_x64/Release/libresources/*.obj)
+        OBJECTS += $$PWD/../libs/mupdf/win_x64/Release/libresources/NotoSansOriya-Regular_otf.obj
 }
 
 unix:!macx {
@@ -77,5 +79,34 @@ macx {
 
 
 
+
+# Interface
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../Interface/release/ -lInterface
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../Interface/debug/ -lInterface
+else:unix: LIBS += -L$$OUT_PWD/../Interface/ -lInterface
+
+INCLUDEPATH += $$PWD/../Interface
+DEPENDPATH += $$PWD/../Interface
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Interface/release/libInterface.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Interface/debug/libInterface.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Interface/release/Interface.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Interface/debug/Interface.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../Interface/libInterface.a
+
+
+# Control
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../Control/release/ -lControl
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../Control/debug/ -lControl
+else:unix: LIBS += -L$$OUT_PWD/../Control/ -lControl
+
+INCLUDEPATH += $$PWD/../Control
+DEPENDPATH += $$PWD/../Control
+
+win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Control/release/libControl.a
+else:win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Control/debug/libControl.a
+else:win32:!win32-g++:CONFIG(release, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Control/release/Control.lib
+else:win32:!win32-g++:CONFIG(debug, debug|release): PRE_TARGETDEPS += $$OUT_PWD/../Control/debug/Control.lib
+else:unix: PRE_TARGETDEPS += $$OUT_PWD/../Control/libControl.a
 
 

@@ -10,9 +10,18 @@
 #include <QFile>
 #include <QDir>
 
+
+
+struct LiteBook
+{
+    QString bookName;
+    QMap<int, QString> book;
+    int pageCount = 0;
+};
+
+
 class Chapter;
 class Sentence;
-
 
 class Book {
 public:
