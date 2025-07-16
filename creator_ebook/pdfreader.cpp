@@ -91,7 +91,6 @@ QList<int> PdfReader::findCorruptedPages()
     return corruptedPages;
 }
 
-
 QString PdfReader::savePageAsImage(int pageNumber, const QString& outPathPrefix)
 {
     if (!_doc || pageNumber < 0 ||  pageNumber >= m_pageCount)
@@ -174,22 +173,52 @@ QString PdfReader::extractOrderedTextLines(int pageNumber)
 {
     fz_page *page = fz_load_page(_ctx, _doc, pageNumber);
     fz_stext_page *textPage = fz_new_stext_page_from_page(_ctx, page, nullptr);
-
     QVector<uint> codepoints;
 
     if (textPage)
     {
+        fz_stext_line *prevLine = nullptr;
+        bool lastLineHyphenated = false; // Был ли перенос с дефисом
+
         for (fz_stext_block *block = textPage->first_block; block; block = block->next)
         {
             if (block->type == FZ_STEXT_BLOCK_TEXT)
             {
                 for (fz_stext_line *line = block->u.t.first_line; line; line = line->next)
                 {
-                    for (fz_stext_char *ch = line->first_char; ch; ch = ch->next)
+                    if (prevLine)
                     {
-                        codepoints.append(ch->c);
+                        // float prevY = prevLine->bbox.y1;
+                        // float currY = line->bbox.y0;
+                        // float dy = currY - prevY;
+                        // float lineHeight = (prevLine->bbox.y1 - prevLine->bbox.y0);
+
+                        // Проверяем, был ли перенос с дефисом
+                        if (!lastLineHyphenated)
+                        {
+                            // if (dy > 1.5 * lineHeight)
+                                // codepoints.append('\n');
+                            // else
+                                codepoints.append(' ');
+                        }
+                        // Если был дефис — ничего не добавляем!
+                        lastLineHyphenated = false;
                     }
-                    codepoints.append('\n');
+                    // Соберём строку, чтобы проанализировать последний символ
+                    QVector<uint> lineCodepoints;
+                    for (fz_stext_char *ch = line->first_char; ch; ch = ch->next)
+                        lineCodepoints.append(ch->c);
+
+                    if (!lineCodepoints.isEmpty() && lineCodepoints.last() == '-')
+                    {
+                        // Если последний символ дефис, не добавляем его и ставим флаг!
+                        lineCodepoints.removeLast();
+                        lastLineHyphenated = true;
+                    }
+
+                    // Добавляем строку в общий массив
+                    codepoints += lineCodepoints;
+                    prevLine = line;
                 }
             }
         }
@@ -199,6 +228,8 @@ QString PdfReader::extractOrderedTextLines(int pageNumber)
 
     return QString::fromUcs4(codepoints.constData(), codepoints.size());
 }
+
+
 
 
 void PdfReader::analyzePages()

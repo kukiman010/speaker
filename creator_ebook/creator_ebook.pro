@@ -56,6 +56,7 @@ win32 {
 
         INCLUDEPATH += $$PWD/../../../../cpp/mupdf/include
         LIBS += -L$$PWD/../../../../cpp/mupdf\platform\win32\x64\Debug libmupdf.lib jpeg.lib openjp2.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib gumbo.lib
+        # cld2.lib
 
         # Автоматически получаем список всех obj-файлов из папки libresources:
         OBJECTS += $$files($$PWD/../libs/mupdf/win_x64/Release/libresources/*.obj)
