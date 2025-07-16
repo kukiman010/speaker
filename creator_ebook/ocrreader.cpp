@@ -8,6 +8,12 @@ OcrReader::OcrReader(QObject* parent)
 
 QString OcrReader::runTesseract(const QString &imagePath, const QString &lang)
 {
+    // !!! Добавляем это, замените на корректный путь на вашей машине !!!
+    qputenv("TESSDATA_PREFIX", "/usr/share/tesseract-ocr/5/");
+
+    qputenv("TESSDATA_PREFIX", "/home/sysadm/qt_project/speaker/tesseract/tessdata/");
+
+
     tesseract::TessBaseAPI api;
     if (api.Init(NULL, lang.toStdString().c_str())) {
         emit alert("OcrReader::runTesseract", tr("Could not initialize tesseract"), "error");
@@ -26,5 +32,6 @@ QString OcrReader::runTesseract(const QString &imagePath, const QString &lang)
 
     return result;
 }
+
 
 

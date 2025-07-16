@@ -33,30 +33,37 @@ void BookConvector::conver(QString filePath)
         LiteBook book;
         if (_pfdReader->openDocument(filePath))
         {
-            qDebug() << "Всего страниц:" << _pfdReader->pageCount();
-            qDebug() << "Текст (первая страница):" << _pfdReader->extractTextFromPage(0);
-
-            // _pfdReader->extractTextFromPage(0);
+            // qDebug() << "Всего страниц:" << _pfdReader->pageCount();
+            // qDebug() << "Текст (первая страница):" << _pfdReader->extractTextFromPage(0);
             book = _pfdReader->extractTextAllPages();
         }
-        qDebug();
+        // qDebug();
 
-        // QList<int> corrupted = _pfdReader->findCorruptedPages();
+        QList<int> corrupted = _pfdReader->findCorruptedPages();
+        corrupted.append(477);
+        if( !corrupted.isEmpty())
+            emit alert(tr("BookConvector::conver"), tr("Найдены ошибки при извлечении текста ") + QString::number(corrupted.size()), "warning");
         // foreach(int i, corrupted)
         // {
-        //     QString imgPath = _pfdReader->savePageAsImage(i, "/tmp/pdf_image");
-        //     QString ocrText = _ocrReader->runTesseract(imgPath, "rus");
-        //     qDebug() << "OCR для страницы" << i << ":\n" << ocrText;
+            // QString imgPath = _pfdReader->savePageAsImage(i, "/tmp/pdf_image");
+            // QString ocrText = _ocrReader->runTesseract(imgPath, "rus");
+            // qDebug() << "OCR для страницы" << i << ":\n" << ocrText;
         // }
 
-        // for(int i =0; i< book.book.size(); ++i)
+        for(int i =0; i< book.book.size(); ++i)
         // {
-        //     qDebug() << book.book[i];
+            qDebug() << book.book[i];
+        //     QString ss = _pfdReader->extractTextFromPage(i);
+        //     qDebug() << ss;
 
         // }
-        // 475
-        QString ss = _pfdReader->extractTextFromPage(480);
-        qDebug() << ss;
+        // 475 + 5
+        // QString ss = _pfdReader->extractTextFromPage(477);
+        // QString ss = book.book[477];
+        // qDebug() << ss;
+
+        // QString ss1 = _pfdReader->extractTextFromPage(478);
+        // qDebug() << ss1;
 
 
         qDebug();
@@ -116,3 +123,10 @@ QStringList BookConvector::splitTextSentences(const QString& text)
     }
     return result;
 }
+
+
+
+
+
+
+

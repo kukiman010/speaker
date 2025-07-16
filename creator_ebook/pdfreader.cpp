@@ -82,41 +82,19 @@ LiteBook PdfReader::extractTextAllPages()
 QList<int> PdfReader::findCorruptedPages()
 {
     QList<int> corruptedPages;
-
-    for (int i = 0; i < m_pageCount; ++i)
+    for(int i = 0; i < m_pageCount; ++i)
     {
-        fz_page *page = fz_load_page(_ctx, _doc, i);
-        fz_stext_page *textPage = fz_new_stext_page_from_page(_ctx, page, nullptr);
-
-        bool isCorrupted = false;
-
-        if (textPage) {
-            for (fz_stext_block *block = textPage->first_block; block; block = block->next) {
-                if (block->type == FZ_STEXT_BLOCK_TEXT) {
-                    for (fz_stext_line *line = block->u.t.first_line; line; line = line->next) {
-                        QString lineText;
-                        for (fz_stext_char *ch = line->first_char; ch; ch = ch->next) {
-                            lineText += QChar(ch->c);
-                            qDebug() << "symbol:" << /*QChar(*/(char)ch->c/*)*/ << "| code:" << (int)ch->c;
-                        }
-                    }
-                }
-            }
-
-            fz_drop_stext_page(_ctx, textPage);
-        }
-        fz_drop_page(_ctx, page);
-
-        if (isCorrupted)
+        QString text = extractOrderedTextLines(i);
+        if(text.contains(QChar(0xFFFD)))
             corruptedPages.append(i);
     }
-
     return corruptedPages;
 }
 
+
 QString PdfReader::savePageAsImage(int pageNumber, const QString& outPathPrefix)
 {
-    if (!_doc || pageNumber < 0 || pageNumber >= m_pageCount)
+    if (!_doc || pageNumber < 0 ||  pageNumber >= m_pageCount)
         return QString();
 
     fz_page *page = fz_load_page(_ctx, _doc, pageNumber);
@@ -129,6 +107,9 @@ QString PdfReader::savePageAsImage(int pageNumber, const QString& outPathPrefix)
 
     // 3. Готовим цветовую схему и создаём картинку (fz_pixmap)
     fz_pixmap *pix = fz_new_pixmap_with_bbox(_ctx, fz_device_rgb(_ctx), bbox, nullptr, 1);
+
+    // !!! ОЧИЩАЕМ pixmap фоном
+    fz_clear_pixmap_with_value(_ctx, pix, 0xFF); // Белый. Если нужен черный — 0x00
 
     fz_matrix ctm = fz_identity;
     fz_device *dev = fz_new_draw_device(_ctx, ctm, pix);
@@ -194,7 +175,7 @@ QString PdfReader::extractOrderedTextLines(int pageNumber)
     fz_page *page = fz_load_page(_ctx, _doc, pageNumber);
     fz_stext_page *textPage = fz_new_stext_page_from_page(_ctx, page, nullptr);
 
-    QString allText;
+    QVector<uint> codepoints;
 
     if (textPage)
     {
@@ -206,9 +187,9 @@ QString PdfReader::extractOrderedTextLines(int pageNumber)
                 {
                     for (fz_stext_char *ch = line->first_char; ch; ch = ch->next)
                     {
-                        allText.append(QChar(ch->c));
+                        codepoints.append(ch->c);
                     }
-                    allText.append('\n');
+                    codepoints.append('\n');
                 }
             }
         }
@@ -216,8 +197,9 @@ QString PdfReader::extractOrderedTextLines(int pageNumber)
     }
     fz_drop_page(_ctx, page);
 
-    return allText;
+    return QString::fromUcs4(codepoints.constData(), codepoints.size());
 }
+
 
 void PdfReader::analyzePages()
 {
@@ -259,6 +241,6 @@ void PdfReader::analyzePages()
         fz_drop_page(_ctx, page);
     }
     qDebug() << "Страниц:" << m_pageCount
-             << "Текстовых страниц:" << m_textPages
-             << "Страниц только с картинками:" << m_imageOnlyPages;
+             << "\nТекстовых страниц:" << m_textPages
+             << "\nСтраниц только с картинками:" << m_imageOnlyPages;
 }

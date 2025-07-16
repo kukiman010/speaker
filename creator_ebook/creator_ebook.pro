@@ -28,16 +28,19 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
         ocrreader.cpp \
+        page_main.cpp \
         pdfreader.cpp
 
 HEADERS += \
         bookconvector.h \
         mainwindow.h \
         ocrreader.h \
+        page_main.h \
         pdfreader.h
 
 FORMS += \
-        mainwindow.ui
+        mainwindow.ui \
+        page_main.ui
 
 
 

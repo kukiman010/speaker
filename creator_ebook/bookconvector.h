@@ -21,6 +21,8 @@ public:
     QStringList splitTextSentences(const QString& text);
 
 
+private:
+
 
 
 public slots:
