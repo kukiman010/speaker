@@ -11,6 +11,11 @@
 #include <QDir>
 
 
+struct SentencePart {
+    int ordinal;
+    QString text;
+    QString langCode;
+};
 
 struct LiteBook
 {

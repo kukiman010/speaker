@@ -3,10 +3,10 @@
 #include <QMessageBox>
 #include <QSharedMemory>
 
+
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    MainWindow w;
 
     QSharedMemory sharedMemory("MyUniqueAppKeyForSpeaker_creator_ebook");
     // Пробуем зааттачиться к старому сегменту, если получится — удаляем
@@ -20,6 +20,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
+
+
+    MainWindow w;
     w.show();
 
     return a.exec();

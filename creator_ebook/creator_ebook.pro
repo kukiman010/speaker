@@ -27,12 +27,12 @@ SOURCES += \
         bookconvector.cpp \
         main.cpp \
         mainwindow.cpp \
-        ocrreader.cpp \
         page_main.cpp \
         pdfreader.cpp
 
 HEADERS += \
         bookconvector.h \
+        languagedetector.h \
         mainwindow.h \
         ocrreader.h \
         page_main.h \
@@ -45,14 +45,12 @@ FORMS += \
 
 
 
+# message($$PWD/../libs/fastText/linux/release)
+# message(L$$PWD/../libs/mupdf/win_x64/Release)
 
 win32 {
-        # message($$PWD/../libs/mupdf/include)
-        # message(L$$PWD/../libs/mupdf/win_x64/Release)
         INCLUDEPATH += D:\programms\vcpkg\installed\x64-windows\include
         LIBS += -LD:/programms/vcpkg/installed/x64-windows/lib tesseract55.lib leptonica-1.85.0.lib
-        # LIBS += -LD:/programms/vcpkg/installed/x64-windows/lib libmupdf.lib jpeg.lib openjp2.lib tesseract55.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib
-        # LIBS += -LD:/programms/vcpkg/installed/x64-windows/lib jpeg.lib openjp2.lib tesseract55.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib
 
         INCLUDEPATH += $$PWD/../../../../cpp/mupdf/include
         LIBS += -L$$PWD/../../../../cpp/mupdf\platform\win32\x64\Debug libmupdf.lib jpeg.lib openjp2.lib zlib.lib jbig2dec.lib freetype.lib harfbuzz.lib gumbo.lib
@@ -64,9 +62,6 @@ win32 {
 }
 
 unix:!macx {
-        # message("$$PWD/../libs/tesseract/include")
-        # message("-L$$PWD/../libs/tesseract/linux/release ")
-
         # mupdf
         INCLUDEPATH += $$PWD/../libs/mupdf/include
         LIBS += -L$$PWD/../libs/mupdf/linux/release -lmupdf -lmupdf-third -lz -ljpeg -lopenjp2
@@ -74,6 +69,10 @@ unix:!macx {
         # tesseract
         INCLUDEPATH += $$PWD/../libs/tesseract/include
         LIBS += -L$$PWD/../libs/tesseract/linux/release -ltesseract -llept
+
+        # fastText
+        INCLUDEPATH += $$PWD/../libs/fastText/include
+        LIBS += -L$$PWD/../libs/fastText/linux/release -lfasttext
 }
 
 macx {

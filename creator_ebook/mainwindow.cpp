@@ -73,7 +73,7 @@ bool MainWindow::settings()
     QDir dir2(qApp->applicationDirPath());
     // dir2.cd("..");
     baseWay = dir2.filePath("") + "/";
-    // qDebug() << baseWay;
+    qDebug() << baseWay;
 
 
     QDir dir(baseWay + "configure");
