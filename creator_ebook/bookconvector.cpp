@@ -10,7 +10,17 @@ BookConvector::BookConvector(QObject *parent)
 {
     _pfdReader = new PdfReader();
     _ocrReader = new OcrReader();
-    _langDetect = new FastTextLanguageDetector("/tmp/lid.176.bin");
+
+    #ifdef Q_OS_WIN
+        _langDetect = new FastTextLanguageDetector("D:/users/qt_projects/speaker/speaker/libs/fastText/data/lid.176.bin");
+    #elif defined(Q_OS_MAC)
+        qDebug() << "Это macOS";
+    #elif defined(Q_OS_LINUX)
+         _langDetect = new FastTextLanguageDetector("/tmp/lid.176.bin");
+    #else
+        qDebug() << "Другая ОС";
+    #endif
+
 
     connect(_pfdReader, &PdfReader::alert, this, &BookConvector::alert);
     connect(_ocrReader, &OcrReader::alert, this, &BookConvector::alert);
@@ -91,7 +101,6 @@ void BookConvector::conver(QString filePath)
 
 
         QStringList qsl = splitTextSentences(ss1);
-
         for(QString s: qsl)
         {
             // qDebug() << s << "\n";
@@ -102,13 +111,10 @@ void BookConvector::conver(QString filePath)
             {
                 qDebug() << part.text << "->" << part.langCode;
             }
-
-
         }
 
-        // QString countryCode = _langDetect->detectLanguage("Я назвал свои коллекции «grapefruit» (англ.: грейпфрут) и «lemon» (англ.: лимон)?");
-
-
+        // QString testText = tr("Я назвал свои коллекции «grapefruit» (англ.: грейпфрут) и «lemon» (англ.: лимон)?");
+        // QVector<SentencePart> parts2 = segmentTextByLanguage(testText);
 
         qDebug();
     }
@@ -168,43 +174,77 @@ QStringList BookConvector::splitTextSentences(const QString& text)
     return result;
 }
 
-QVector<SentencePart> BookConvector::segmentTextByLanguage(const QString &input, int ngram)
+QVector<SentencePart> BookConvector::atomicSegmentTextByLanguage(const QString &input)
 {
     QVector<SentencePart> result;
-    QStringList words = input.split(QRegularExpression("\\s+"), Qt::SkipEmptyParts);
+    QRegularExpression tokenRegex(R"(\w+|[^\w\s]+|\s+)"); // слова, знаки, пробелы
+    QRegularExpressionMatchIterator i = tokenRegex.globalMatch(input);
 
     QString currentLang;
     QString currentFragment;
 
-    for (int i = 0; i < words.size(); )
+    while (i.hasNext())
     {
-        QStringList ngramWords;
-        int actualN = qMin(ngram, words.size() - i);
-        for (int j = 0; j < actualN; ++j) {
-            ngramWords << words[i + j];
-        }
-        QString fragment = ngramWords.join(' ');
-        QString lang = _langDetect->detectLanguage(fragment);
+        QRegularExpressionMatch match = i.next();
+        QString token = match.captured(0);
 
-        if (lang.isEmpty()) {
-            lang = currentLang; // Можно также выбросить фрагмент, если язык не определён
+        // Пропускаем только пустые пробелы, если нужно сохранение их — уберите эту проверку
+        if (token.trimmed().isEmpty())
+        {
+            currentFragment += token;
+            continue;
         }
 
-        if (currentLang != lang && !currentFragment.isEmpty()) {
-            result.append({i, currentFragment.trimmed(), currentLang});
+        QString lang = _langDetect->detectLanguage(token);
+        if (lang.isEmpty())
+            lang = currentLang;
+
+        // Смена языка — новый фрагмент
+        if (lang != currentLang && !currentFragment.isEmpty())
+        {
+            result.append({/*ordinal позже*/ 0, currentFragment, currentLang});
             currentFragment.clear();
         }
-
         currentLang = lang;
-        currentFragment += fragment + " ";
-        i += actualN;
+        currentFragment += token;
     }
-    if (!currentFragment.isEmpty() && !currentLang.isEmpty()) {
-        result.append({1, currentFragment.trimmed(), currentLang});
+    if (!currentFragment.isEmpty()) {
+        result.append({0, currentFragment, currentLang});
     }
     return result;
 }
 
+QVector<SentencePart> BookConvector::mergeConsecutiveSameLang(const QVector<SentencePart> &atomicParts, int ngram)
+{
+    QVector<SentencePart> merged;
+    int ordinal = 1;
+
+    for (const SentencePart& part : atomicParts)
+    {
+        QString correctedLang = part.langCode;
+        // if (maybeIsPopularLanguage(part.text))
+            // correctedLang = detectPopularLanguage(part.text);
+
+        if (!merged.isEmpty() && part.text.trimmed().length() < ngram)
+        {
+            merged.last().text += part.text;
+            // merged.last().langCode — не меняем, short-words just attach!
+            continue;
+        }
+
+        if (!merged.isEmpty() && merged.last().langCode == correctedLang)
+            merged.last().text += part.text;
+        else
+            merged.append({ordinal++, part.text, correctedLang});
+    }
+    return merged;
+}
+
+QVector<SentencePart> BookConvector::segmentTextByLanguage(const QString &input)
+{
+    QVector<SentencePart> atoms = atomicSegmentTextByLanguage(input);
+    return mergeConsecutiveSameLang(atoms);
+}
 
 
 

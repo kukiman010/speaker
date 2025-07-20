@@ -24,7 +24,7 @@ void Page_main::onItemClicked(QListWidgetItem *item)
 {
     QString text = item->text();
     QVariant userData = item->data(Qt::UserRole);
-    qDebug() << "Клик по элементу:" << text << "данные:" << userData;
+    // qDebug() << "Клик по элементу:" << text << "данные:" << userData;
     emit createLatFile(text);
 }
 

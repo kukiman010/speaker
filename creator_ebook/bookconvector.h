@@ -20,7 +20,10 @@ public:
     QStringList splitTextSentences(const QString& text);
     // QVector<SentencePart> processSentence(const QString &sentence);
     // QVector<SentencePart> splitSentence(const QString &sentence);
-    QVector<SentencePart> segmentTextByLanguage(const QString& input, int ngram = 5);
+
+    QVector<SentencePart> atomicSegmentTextByLanguage(const QString &input);
+    QVector<SentencePart> mergeConsecutiveSameLang(const QVector<SentencePart> &atomicParts, int ngram = 4);
+    QVector<SentencePart> segmentTextByLanguage(const QString &input);
 
 
 public slots:

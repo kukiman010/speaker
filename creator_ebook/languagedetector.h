@@ -14,7 +14,8 @@ public:
         model.loadModel(modelPath);
     }
 
-    QString detectLanguage(const QString& input) {
+    QString detectLanguage(const QString& input)
+    {
         std::vector<std::pair<fasttext::real, std::string>> predictions;
 
         std::istringstream in(input.toStdString());
@@ -26,7 +27,8 @@ public:
         // fastText возвращает метки в формате "__label__en"
         std::string langLabel = predictions[0].second;
         const std::string prefix = "__label__";
-        if (langLabel.find(prefix) == 0) {
+        if (langLabel.find(prefix) == 0)
+        {
             // std::cout << "Detected language: " << langLabel << "  Probability=" << predictions[0].first << std::endl;
             return QString::fromStdString(langLabel.substr(prefix.size()));
         }

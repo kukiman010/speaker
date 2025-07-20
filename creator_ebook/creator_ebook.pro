@@ -45,8 +45,8 @@ FORMS += \
 
 
 
-# message($$PWD/../libs/fastText/linux/release)
-# message(L$$PWD/../libs/mupdf/win_x64/Release)
+# message($$PWD/../libs/fastText/include)
+# message(-L$$PWD/../libs/fastText/win_x64/release)
 
 win32 {
         INCLUDEPATH += D:\programms\vcpkg\installed\x64-windows\include
@@ -59,6 +59,18 @@ win32 {
         # Автоматически получаем список всех obj-файлов из папки libresources:
         OBJECTS += $$files($$PWD/../libs/mupdf/win_x64/Release/libresources/*.obj)
         OBJECTS += $$PWD/../libs/mupdf/win_x64/Release/libresources/NotoSansOriya-Regular_otf.obj
+
+
+        # fastText
+        INCLUDEPATH += $$PWD/../libs/fastText/include
+        CONFIG(debug, debug|release) {
+                LIBS += -L$$PWD/../libs/fastText/win_x64/debug fasttext.lib
+        }
+
+        CONFIG(release, debug|release) {
+                LIBS += -L$$PWD/../libs/fastText/win_x64/release fasttext.lib
+        }
+
 }
 
 unix:!macx {
